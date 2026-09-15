@@ -1,0 +1,59 @@
+/*
+  Theme tokens for @holmesdev/widgets.
+
+  Dark values below are from Hannah's style guide, contrast checked
+  for WCAG AA via webaim.
+
+  Light values are placeholders only. Not yet confirmed by the team.
+  Light/dark theming is still a Should Have and light mode hasn't
+  been designed yet.
+*/
+
+:root,
+[data-theme="dark"] {
+  --bg-panel: #101221;
+  --bg-widget: linear-gradient(#222050, #181d3e);
+  --border: #343875;
+
+  --purple-400: #7b5ffa;
+  --purple-300: #9083cf;
+  --purple-200: #c3b8f2;
+  --purple-100: #e4defb;
+
+  --text-primary: #f9f9fa;
+  --text-secondary: #c1c4e5;
+
+  --success: #34d399;
+  --error: #fca5a5;
+  --warning: #fde68a;
+
+  --track-ring: rgb(from var(--purple-400) r g b / 0.3);
+}
+
+[data-theme="light"] {
+  /* Placeholder only. Not confirmed with UI Lead. */
+  --bg-panel: #ffffff;
+  --bg-widget: #f5f5fa;
+  --border: #d9dbe8;
+
+  --purple-400: #7b5ffa;
+  --purple-300: #9083cf;
+  --purple-200: #b9a8ff;
+  --purple-100: #e6e1ff;
+
+  --text-primary: #101221;
+  --text-secondary: #4a4d6b;
+
+  --success: #16a34a;
+  --error: #dc2626;
+  --warning: #d97706;
+
+  --track-ring: rgb(from var(--purple-400) r g b / 0.15);
+}
+
+body {
+  background: var(--bg-panel);
+  color: var(--text-primary);
+  font-family: "Geist", -apple-system, sans-serif;
+  transition: background 0.15s ease, color 0.15s ease;
+}
