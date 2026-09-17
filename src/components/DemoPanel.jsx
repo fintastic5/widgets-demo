@@ -6,8 +6,8 @@ import { Gauge } from "./widgets/Gauge";
 import { Distribution } from "./widgets/Distribution";
 import { GoalRings } from "./widgets/GoalRings";
 
-// Two column grid, four widgets at size 1 (half width), Goal Rings
-// at size 2 (full width) since it needs the room for the ring plus list.
+// Demo layout: 2-column grid with 5 widgets.
+// First 4 widgets are half-width (size={1}), Goal Rings spans full width (size={2}).
 export function DemoPanel() {
   return (
     <Panel>

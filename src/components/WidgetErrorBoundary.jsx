@@ -7,6 +7,9 @@ const ErrorMessage = styled.div`
   padding: 12px;
 `;
 
+// Catches render errors in a widget so the rest of the panel stays usable.
+// Class component required: error boundaries need getDerivedStateFromError
+// and componentDidCatch, which have no hook equivalents.
 export class WidgetErrorBoundary extends React.Component {
   constructor(props) {
     super(props);

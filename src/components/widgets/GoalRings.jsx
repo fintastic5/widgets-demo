@@ -94,7 +94,10 @@ const Badge = styled.span`
 
 const RING_COLORS = ["var(--purple-200)", "var(--purple-300)", "var(--purple-400)"];
 
+// Three concentric rings (overall + up to 3 items) with a detail list.
+// items: array of { label, amount, change, pct }.
 export function GoalRings({ title, subtitle, overall = 0, items = [] }) {
+  // Three concentric rings with decreasing radii. Only first 3 items get rings.
   const radii = [70, 54, 38];
 
   return (

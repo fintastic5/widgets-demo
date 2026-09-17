@@ -1,3 +1,4 @@
+// Public API exports for the widget library.
 export { Gauge } from "./components/widgets/Gauge";
 export { Countdown } from "./components/widgets/Countdown";
 export { Distribution } from "./components/widgets/Distribution";

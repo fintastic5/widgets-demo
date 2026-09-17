@@ -15,6 +15,8 @@ const Subtitle = styled.p`
   color: var(--text-primary);
 `;
 
+// Donut chart using a conic gradient. The ::after pseudo-element
+// covers the center to create the ring effect.
 const Donut = styled.div`
   width: 140px;
   height: 140px;
@@ -57,7 +59,11 @@ const Swatch = styled.span`
 
 const SEGMENT_COLORS = ["var(--purple-400)", "var(--purple-300)", "var(--purple-200)", "var(--purple-100)"];
 
+// Renders a donut chart with a two-column legend.
+// segments: array of { label, pct } adding up to 100.
 export function Distribution({ title, subtitle, segments = [] }) {
+  // Build conic-gradient stops: each segment gets a start%/end% range.
+  // Reduce tracks the running cursor so segments don't overlap.
   const stops = segments.reduce((acc, seg, i) => {
     const color = SEGMENT_COLORS[i % SEGMENT_COLORS.length];
     const start = acc.cursor;

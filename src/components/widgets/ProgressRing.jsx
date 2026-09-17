@@ -34,6 +34,8 @@ const Value = styled.div`
   color: var(--text-primary);
 `;
 
+// Circular progress ring using SVG stroke-dasharray.
+// value: 0-100 percentage.
 export function ProgressRing({ title, subtitle, value = 0 }) {
   const radius = 70;
   const c = ringCircumference(radius);

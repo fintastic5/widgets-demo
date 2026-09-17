@@ -39,6 +39,8 @@ const Footer = styled.p`
   text-align: center;
 `;
 
+// Returns SVG arc path for a semicircle segment.
+// Angles in degrees, 0° at top (12 o'clock), clockwise.
 function describeArc(cx, cy, r, startAngle, endAngle) {
   const start = polarToCartesian(cx, cy, r, endAngle);
   const end = polarToCartesian(cx, cy, r, startAngle);
@@ -47,6 +49,7 @@ function describeArc(cx, cy, r, startAngle, endAngle) {
 }
 
 function polarToCartesian(cx, cy, r, angleInDegrees) {
+  // Convert degrees to radians with 0° at top (SVG default is 0° at right)
   const angleInRadians = ((angleInDegrees - 180) * Math.PI) / 180;
   return {
     x: cx + r * Math.cos(angleInRadians),
@@ -54,9 +57,8 @@ function polarToCartesian(cx, cy, r, angleInDegrees) {
   };
 }
 
-/**
- * Gauge. Semicircular radial dial. Widget 4, confirmed via the Sprint 1 prototype.
- */
+// Semicircular gauge showing a percentage value.
+// Clamps value to 0-100. Optional target/actual labels below.
 export function Gauge({ title, subtitle, value, target, actualLabel }) {
   const pct = Math.max(0, Math.min(100, value));
   const angle = (pct / 100) * 180;

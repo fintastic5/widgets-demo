@@ -70,6 +70,7 @@ const NotifyButton = styled.button`
   cursor: pointer;
 `;
 
+// Returns { days, hours, mins } until target date.
 function timeRemaining(target) {
   const diff = Math.max(0, new Date(target) - new Date());
   const days = Math.floor(diff / (1000 * 60 * 60 * 24));
@@ -78,6 +79,8 @@ function timeRemaining(target) {
   return { days, hours, mins };
 }
 
+// Countdown timer with days/hours/minutes boxes, launch date, and notify button.
+// Updates every minute via setInterval.
 export function Countdown({ title, subtitle, launchDate, onNotify }) {
   const [time, setTime] = useState(() => timeRemaining(launchDate));
 

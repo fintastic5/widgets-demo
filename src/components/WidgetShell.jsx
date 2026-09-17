@@ -40,6 +40,7 @@ const StateMessage = styled.div`
   text-align: center;
 `;
 
+// Shimmering placeholder shown while widget data loads.
 const Skeleton = styled.div`
   height: 140px;
   border-radius: 12px;
@@ -53,7 +54,8 @@ const Skeleton = styled.div`
   }
 `;
 
-// WidgetShell owns the header, menu slot and the loading/error/empty/ready states.
+// WidgetShell owns the header (title, subtitle, menu), and wraps content
+// in an error boundary with loading/error/empty/ready states.
 export function WidgetShell({ title, subtitle, state = "ready", onMenuClick, children }) {
   return (
     <div>
