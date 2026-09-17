@@ -10,16 +10,34 @@ const PanelGrid = styled.div`
   border-radius: 16px;
 `;
 
+// A slot in the grid. $size lets it span 1 or 2 columns.
 const Slot = styled.div`
   grid-column: span ${(p) => p.$size};
   display: flex;
   cursor: grab;
+  transition: border-color 0.15s, background-color 0.15s, transform 0.15s;
+
+  ${(p) =>
+    p.$dragOver &&
+    `
+    border: 2px dashed var(--purple-400);
+    background: var(--bg-panel);
+    transform: scale(1.02);
+  `}
+
+  ${(p) =>
+    p.$dragging &&
+    `
+    opacity: 0.5;
+    transform: scale(1.02);
+  `}
 
   &:active {
     cursor: grabbing;
   }
 `;
 
+// Card that wraps each widget's content.
 const WidgetCard = styled.div`
   background: var(--bg-widget);
   border: 1px solid var(--border);
@@ -31,74 +49,145 @@ const WidgetCard = styled.div`
   flex-direction: column;
 `;
 
+// Shows when no widgets have been added yet - also acts as drop target.
 const EmptyState = styled.div`
   grid-column: 1 / -1;
-  border: 1px dashed var(--border);
+  border: 2px dashed ${(p) => (p.$dragOver ? "var(--purple-400)" : "var(--border)")};
   border-radius: 24px;
   min-height: 220px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   color: var(--text-secondary);
   font-size: 14px;
+  gap: 8px;
+  transition: border-color 0.15s, background-color 0.15s;
+  background: ${(p) => (p.$dragOver ? "var(--bg-panel)" : "transparent")};
 `;
 
-// Panel owns arrangement, sizing and the empty state. Widgets only own
-// their own body content. Order is kept as actual elements, not indices,
-// so a drag never points at a position that no longer exists.
+const EmptyStateIcon = styled.div`
+  font-size: 32px;
+  opacity: 0.5;
+`;
+
+// Panel handles layout, drag-to-reorder, and empty state.
+// Widgets only render their own content; Panel decides where they go.
 export function Panel({ children }) {
   const items = React.Children.toArray(children);
   const [dragOrderKeys, setDragOrderKeys] = useState(null);
+  const [dragOverIndex, setDragOverIndex] = useState(null);
+  const [draggingIndex, setDraggingIndex] = useState(null);
   const dragIndex = useRef(null);
 
-  // Derive display order: use dragOrderKeys if set, otherwise use items directly
+  // Derive display order from stored keys; fall back to original order.
+  // Using keys (not indices) means reordering survives additions/removals.
   const ordered = dragOrderKeys
     ? dragOrderKeys.map((key) => items.find((item) => item.key === key)).filter(Boolean)
     : items;
 
   if (items.length === 0) {
     return (
-      <PanelGrid>
-        <EmptyState>No widgets added yet</EmptyState>
+      <PanelGrid onDragOver={(e) => e.preventDefault()} onDrop={() => {}}>
+        <EmptyState $dragOver={dragOverIndex === 0}>
+          <EmptyStateIcon>📦</EmptyStateIcon>
+          Drop widgets here to get started
+        </EmptyState>
       </PanelGrid>
     );
+  }
+
+  function handleDragStart(index) {
+    dragIndex.current = index;
+    setDraggingIndex(index);
+    setDragOverIndex(index);
+  }
+
+  function handleDragEnd() {
+    setDraggingIndex(null);
+    setDragOverIndex(null);
+    dragIndex.current = null;
+  }
+
+  function handleDragOver(e, index) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    setDragOverIndex(index);
+  }
+
+  function handleDragLeave() {
+    setDragOverIndex(null);
   }
 
   function handleDrop(dropIndex) {
     if (dragIndex.current === null || dragIndex.current === dropIndex) {
       dragIndex.current = null;
+      setDraggingIndex(null);
+      setDragOverIndex(null);
       return;
     }
+
     setDragOrderKeys((prev) => {
-      const order = prev ? [...prev] : items.map((item) => item.key);
+      const order = prev ? [...prev] : ordered.map((item) => item.key);
       const [moved] = order.splice(dragIndex.current, 1);
       order.splice(dropIndex, 0, moved);
       return order;
     });
+
     dragIndex.current = null;
+    setDraggingIndex(null);
+    setDragOverIndex(null);
   }
 
   return (
-    <PanelGrid>
+    <PanelGrid onDragLeave={handleDragLeave} onDragEnd={handleDragEnd}>
       {ordered.map((item, i) => {
         const size = (item.props && item.props.size) || 1;
+        const isDragOver = dragOverIndex === i;
+        const isDragging = draggingIndex === i;
+
         return (
           <Slot
             key={item.key}
             $size={size}
+            $dragOver={isDragOver}
+            $dragging={isDragging}
             draggable
-            onDragStart={() => (dragIndex.current = i)}
-            onDragOver={(e) => e.preventDefault()}
+            onDragStart={() => handleDragStart(i)}
+            onDragOver={(e) => handleDragOver(e, i)}
             onDrop={() => handleDrop(i)}
+            onDragEnd={handleDragEnd}
           >
             {item}
           </Slot>
         );
       })}
+
+      {/* Drop zone after last widget */}
+      {dragOverIndex === ordered.length && (
+        <div
+          style={{
+            gridColumn: "1 / -1",
+            height: "60px",
+            border: "2px dashed var(--purple-400)",
+            borderRadius: "12px",
+            background: "var(--bg-panel)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: "var(--purple-400)",
+            fontSize: "13px",
+            marginTop: "0.5rem",
+          }}
+        >
+          Drop here
+        </div>
+      )}
     </PanelGrid>
   );
 }
 
+// Simple wrapper that applies the card styling.
 export function Widget({ children }) {
   return <WidgetCard>{children}</WidgetCard>;
 }
